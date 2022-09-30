@@ -42,6 +42,8 @@ dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter'
     // Lombok https://projectlombok.org/setup/gradle // TODO: version could be managed with spring dependencies (?)
+    testImplementation 'org.mockito:mockito-core:4.7.0'
+
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
