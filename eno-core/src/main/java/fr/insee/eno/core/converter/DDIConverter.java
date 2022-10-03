@@ -1,8 +1,10 @@
 package fr.insee.eno.core.converter;
 
 import datacollection33.*;
+import fr.insee.eno.core.annotations.Format;
 import fr.insee.eno.core.model.EnoObject;
 import fr.insee.eno.core.model.question.*;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import reusable33.RepresentationType;
 import reusable33.TextDomainType;
@@ -14,6 +16,7 @@ public class DDIConverter {
     public static final String RADIO_OUTPUT_FORMAT = "radio-button";
     public static final String CHECKBOX_OUTPUT_FORMAT = "checkbox";
     public static final String DROPDOWN_OUTPUT_FORMAT = "drop-down-list";
+
     //TODO: Constants class for these?
 
     /**
@@ -21,14 +24,21 @@ public class DDIConverter {
      *
      * @return A Eno model object.
      */
-    public static EnoObject instantiateFromDDIObject(Object ddiObject) {
-        if (ddiObject instanceof QuestionItemType)
+    public static EnoObject instantiateFromDDIObject(@NonNull Object ddiObject) {
+        try {
+            return EnoMappings.forFormat(Format.DDI).from(ddiObject).newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+   /* if (ddiObject instanceof QuestionItemType)
             return instantiateFrom((QuestionItemType) ddiObject);
         else if (ddiObject instanceof QuestionGridType)
             return instantiateFrom((QuestionGridType) ddiObject);
         else
-            throw new RuntimeException("Eno conversion for DDI type " + ddiObject.getClass() + " not implemented.");
-    }
+                throw new RuntimeException("Eno conversion for DDI type " + ddiObject.getClass() + " not implemented.");
+    */
 
     private static EnoObject instantiateFrom(QuestionItemType questionItemType) {
         RepresentationType representationType = questionItemType.getResponseDomain();
