@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id 'org.springframework.boot' version '2.7.3' apply false
+    id 'maven-publish'
 }
 
 description = 'eno-core'
@@ -11,6 +12,22 @@ To manage dependencies with the help of spring boot dependencies BOM
 with Gradle, two solutions are possible :
 refer to https://docs.spring.io/spring-boot/docs/2.7.3/gradle-plugin/reference/htmlsingle
  */
+
+
+publishing{
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+    // The value 'enforced-platform' is provided in the validation
+    // error message you got
+    suppressedValidationErrors.add('enforced-platform')
+}
+
 
 dependencies {
 
