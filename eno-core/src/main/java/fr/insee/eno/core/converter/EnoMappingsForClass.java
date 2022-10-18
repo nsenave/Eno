@@ -11,7 +11,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Slf4j
-public record EnoMappingsForClass (Map<Expression, Class<? extends EnoObject>> mappings, Class<?> externalModelClass) {
+public record EnoMappingsForClass (
+        Map<Expression, Class<? extends EnoObject>> mappings,
+        Class<?> externalModelClass) {
 
     private static final EvaluationContext context = new StandardEvaluationContext();
 

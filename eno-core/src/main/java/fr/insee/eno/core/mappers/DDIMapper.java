@@ -246,7 +246,7 @@ public class DDIMapper extends Mapper {
         }
     }
 
-    EnoObject callConstructor(Class<?> classType) {
+    public static EnoObject callConstructor(Class<?> classType) {
         try {
             return (EnoObject) classType.getDeclaredConstructor().newInstance();
         } catch (NoSuchMethodException e) {

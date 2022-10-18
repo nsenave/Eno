@@ -2,6 +2,7 @@ package fr.insee.eno.core.converter;
 
 import datacollection33.*;
 import fr.insee.eno.core.annotations.Format;
+import fr.insee.eno.core.mappers.DDIMapper;
 import fr.insee.eno.core.model.EnoObject;
 import fr.insee.eno.core.model.question.*;
 import lombok.NonNull;
@@ -25,11 +26,7 @@ public class DDIConverter {
      * @return A Eno model object.
      */
     public static EnoObject instantiateFromDDIObject(@NonNull Object ddiObject) {
-        try {
-            return EnoMappings.forFormat(Format.DDI).from(ddiObject).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return DDIMapper.callConstructor(EnoMappings.forFormat(Format.DDI).from(ddiObject));
     }
 
    /* if (ddiObject instanceof QuestionItemType)
