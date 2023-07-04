@@ -2,7 +2,6 @@ package fr.insee.eno.core.sandbox;
 
 import datacollection33.*;
 import datacollection33.impl.TextTypeImpl;
-import fr.insee.eno.core.converter.FooConverter;
 import fr.insee.eno.core.converter.out.DDIOutConverter;
 import fr.insee.eno.core.exceptions.business.DDIParsingException;
 import fr.insee.eno.core.parsers.DDIParser;
@@ -12,13 +11,10 @@ import instance33.DDIInstanceDocument;
 import instance33.DDIInstanceType;
 import logicalproduct33.VariableGroupType;
 import logicalproduct33.VariableSchemeType;
-import org.apache.xmlbeans.impl.schema.DocumentFactory;
 import org.junit.jupiter.api.Test;
 import reusable33.*;
 import reusable33.impl.ContentTypeImpl;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 

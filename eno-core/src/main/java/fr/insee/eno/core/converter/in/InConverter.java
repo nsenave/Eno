@@ -1,6 +1,7 @@
 package fr.insee.eno.core.converter.in;
 
 import fr.insee.eno.core.annotations.InConversion;
+import fr.insee.eno.core.converter.DDIConverter;
 import fr.insee.eno.core.exceptions.technical.ConversionException;
 import fr.insee.eno.core.exceptions.technical.MappingException;
 import fr.insee.eno.core.model.EnoObject;
@@ -12,39 +13,71 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Class to convert objects between input formats and Eno model.
+ * @param <T> Type objects in the input format.
+ */
 @Slf4j
 public abstract class InConverter<T> {
 
+    /** Input format. */
     Format format;
-    EvaluationContext context;
+    /** Evaluation context used when evaluating SpEL expression. */
+    EvaluationContext context; // TODO: context might not be useful for conversion expressions, to be removed probably
 
     InConverter(Format format, EvaluationContext context) {
         this.format = format;
         this.context = context;
     }
 
-    public EnoObject instantiateFrom(Class<?> enoClass, T inObject) {
-        InConversion[] inConversions = enoClass.getAnnotationsByType(InConversion.class);
-        if (inConversions.length == 0)
-            return callConstructor(enoClass);
-        List<InConversion> inConversionResult = Arrays.stream(inConversions)
+    /**
+     * Returns the appropriate Eno object from eno class type and input format object given,
+     * using the conversion annotations defined in the model.
+     * @param enoClass Type to be instantiated.
+     * @param inObject Corresponding object of the input format.
+     * @return The appropriate Eno object in this context.
+     * @see InConversion
+     */
+    public final EnoObject instantiateFrom(Class<?> enoClass, T inObject) {
+        // Read the conversion annotations that match the format
+        List<InConversion> inConversions = Arrays.stream(enoClass.getAnnotationsByType(InConversion.class))
                 .filter(inConversion -> format.equals(inConversion.format()))
+                .toList();
+        // If none, this means that there is no conversion to do
+        if (inConversions.isEmpty()) {
+            // Temporary block while annotations are not placed everywhere needed: use the old converter classes
+            if (Modifier.isAbstract(enoClass.getModifiers())) {
+                return DDIConverter.instantiateFromDDIObject(inObject); //TODO: remove usage of this (conversion using annotations)
+            }
+            //
+            return callConstructor(enoClass);
+        }
+        // Else, evaluate the conversion expressions
+        List<InConversion> inConversionResult = inConversions.stream()
                 .filter(inConversion -> evaluateConversionExpression(inObject, inConversion, enoClass))
                 .toList();
+        // Exactly one match is expected
         verifyConversionResult(enoClass, inConversionResult);
-        return callConstructor(inConversionResult.get(0).targetType());
+        // Recursive call using the type defined in the match
+        return instantiateFrom(inConversionResult.get(0).targetType(), inObject);
     }
 
+    /** Throws a conversion exception if the result is not exactly of size 1. */
     private static void verifyConversionResult(Class<?> enoClass, List<InConversion> inConversionResult) {
-        if (inConversionResult.size() == 0)
+        int size = inConversionResult.size();
+        if (size == 0)
             throw new ConversionException("No match evaluating conversion annotation on class " + enoClass);
-        if (inConversionResult.size() > 1)
+        if (size > 1)
             throw new ConversionException("Several matches evaluating conversion annotation on class " + enoClass);
     }
 
+    /** Evaluate the expression contained the in conversion annotation against the object given,
+     * also using the evaluation context.
+     * The result is expected to be boolean, an exception is thrown if the expression doesn't respect that. */
     private Boolean evaluateConversionExpression(T inObject, InConversion inConversion, Class<?> enoClass) {
         Expression expression = new SpelExpressionParser().parseExpression(inConversion.expression());
         try {
@@ -56,6 +89,7 @@ public abstract class InConverter<T> {
         }
     }
 
+    /** Call the constructor of the given type using reflection. */
     private EnoObject callConstructor(Class<?> classType) {
         try {
             return (EnoObject) classType.getDeclaredConstructor().newInstance();
