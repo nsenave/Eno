@@ -14,7 +14,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DateQuestion extends SingleResponseQuestion {
+public class DateQuestion extends TimeQuestion {
 
     /**
      * Minimum date value allowed.

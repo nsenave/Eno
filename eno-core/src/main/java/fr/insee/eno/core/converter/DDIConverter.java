@@ -16,10 +16,7 @@ import java.util.Set;
 @Slf4j
 public class DDIConverter {
 
-    public static final String DDI_PAIRWISE_KEY = "UIComponent";
-    public static final String DDI_PAIRWISE_VALUE = "HouseholdPairing";
-    public static final Set<String> DDI_DATE_TYPE_CODE = Set.of("date", "gYearMonth", "gYear");
-    public static final Set<String> DDI_DURATION_TYPE_CODE = Set.of("duration");
+
 
     private DDIConverter() {}
 
@@ -55,55 +52,8 @@ public class DDIConverter {
     }
 
     public static EnoObject instantiateFrom(QuestionItemType questionItemType) {
-        RepresentationType representationType = questionItemType.getResponseDomain();
-        if (representationType instanceof NominalDomainType) {
-            return new BooleanQuestion();
-        }
-        else if (representationType instanceof TextDomainType) {
-            return new TextQuestion();
-        }
-        else if (representationType instanceof NumericDomainType) {
-            return new NumericQuestion();
-        }
-        else if (representationType instanceof DateTimeDomainType dateTimeDomainType) {
-            return convertDateTimeQuestion(dateTimeDomainType);
-        }
-        else if (representationType instanceof CodeDomainType) {
-            if (! questionItemType.getUserAttributePairList().isEmpty()) {
-                StandardKeyValuePairType userAttributePair = questionItemType.getUserAttributePairArray(0);
-                String attributeKey = userAttributePair.getAttributeKey().getStringValue();
-                String attributeValue = userAttributePair.getAttributeValue().getStringValue();
-                if (! DDI_PAIRWISE_KEY.equals(attributeKey))
-                    log.warn(String.format(
-                            "Attribute pair list found in question item '%s', but key is equal to '%s' (should be '%s')",
-                            questionItemType.getIDArray(0).getStringValue(), attributeKey, DDI_PAIRWISE_KEY));
-                if (! DDI_PAIRWISE_VALUE.equals(attributeValue))
-                    log.warn(String.format(
-                            "Attribute pair list found in question item '%s', but value is equal to '%s' (should be '%s')",
-                            questionItemType.getIDArray(0).getStringValue(), attributeValue, DDI_PAIRWISE_VALUE));
-                return new PairwiseQuestion();
-            }
-            else {
-                return new UniqueChoiceQuestion();
-            }
-
-        }
-        else {
-            throw new ConversionException(
-                    "Unable to identify question type in DDI question item " +
-                            questionItemType.getIDArray(0).getStringValue());
-        }
-    }
-
-    private static EnoObject convertDateTimeQuestion(DateTimeDomainType dateTimeDomainType) {
-        String dateTypeCode = dateTimeDomainType.getDateTypeCode().getStringValue();
-        if (DDI_DATE_TYPE_CODE.contains(dateTypeCode))
-            return new DateQuestion();
-        if (DDI_DURATION_TYPE_CODE.contains(dateTypeCode)) {
-            return new DurationQuestion();
-        }
-        // If none match, thrown an exception
-        throw new ConversionException("Unknown date type code: "+dateTypeCode);
+        throw new UnsupportedOperationException(
+                "Conversion of single response questions / question items switched to annotation");
     }
 
     public static EnoObject instantiateFrom(QuestionGridType questionGridType) {

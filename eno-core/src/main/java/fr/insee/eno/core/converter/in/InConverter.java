@@ -83,8 +83,8 @@ public abstract class InConverter<T> {
         try {
             return expression.getValue(context, inObject, Boolean.class);
         } catch (EvaluationException e) {
-            log.debug("Evaluation failed on SpEL expression: " + inConversion.expression());
-            log.debug("Make sure that the expression returns a boolean value.");
+            log.error("Evaluation failed on SpEL expression: " + inConversion.expression());
+            log.error("Make sure that the expression returns a boolean value.");
             throw new ConversionException("Error when trying to evaluate conversion expression on class " + enoClass, e);
         }
     }
@@ -94,10 +94,10 @@ public abstract class InConverter<T> {
         try {
             return (EnoObject) classType.getDeclaredConstructor().newInstance();
         } catch (NoSuchMethodException e) {
-            log.debug("Default constructor may be missing in class " + classType);
+            log.error("Default constructor may be missing in class " + classType);
             throw new MappingException("Unable to create instance for class " + classType, e);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            log.debug("Conversion annotation may be missing in class " + classType);
+            log.error("Conversion annotation may be missing in class " + classType);
             throw new MappingException("Unable to create instance for class " + classType, e);
         }
     }

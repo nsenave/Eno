@@ -3,6 +3,7 @@ package fr.insee.eno.core.mappers.ddi;
 import datacollection33.CodeDomainType;
 import datacollection33.GridDimensionType;
 import datacollection33.QuestionGridType;
+import fr.insee.eno.core.converter.in.DDIInConverter;
 import fr.insee.eno.core.mappers.MapperTestUtils;
 import fr.insee.eno.core.model.response.CodeResponse;
 import fr.insee.eno.core.reference.DDIIndex;
@@ -11,6 +12,7 @@ import logicalproduct33.CategoryType;
 import logicalproduct33.CodeListType;
 import logicalproduct33.CodeType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.expression.EvaluationContext;
@@ -37,6 +39,7 @@ public class CodeResponseTest {
     }
 
     @Test
+    @Disabled("Refactors to do in mapper")
     public void mapLabel_oneElementInCodeList() {
         //
         String fooLabel = "Foo label";

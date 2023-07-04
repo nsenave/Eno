@@ -11,7 +11,7 @@ import lombok.Setter;
  * It is not supported in Lunatic yet. */
 @Getter
 @Setter
-public class DurationQuestion extends SingleResponseQuestion {
+public class DurationQuestion extends TimeQuestion {
 
     /**
      * Duration format.
